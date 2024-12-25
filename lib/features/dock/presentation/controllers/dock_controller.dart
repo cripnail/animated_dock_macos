@@ -2,18 +2,15 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/dock_item.dart';
 import '../../data/repositories/dock_repository.dart';
 
+
 class DockController extends ChangeNotifier {
   final DockRepository repository;
   late List<DockItem> _items;
   int? _hoveredIndex;
   int? _draggedIndex;
   bool _isDragging = false;
-
-  // static const double _maxOffsetY = -15.0;
-  // static const double _neighborOffsetY = -10.0;
   static const double _maxOffsetY = -10.0;
   static const double _neighborOffsetY = -6.0;
-  static const int _itemsAffected = 2;
 
   DockController({required this.repository}) {
     _items = repository.getInitialItems();
@@ -55,47 +52,15 @@ class DockController extends ChangeNotifier {
     }
   }
 
-  void _updatePositions() {
-    final newItems = List<DockItem>.from(_items);
-    final targetIndex = _hoveredIndex ?? _draggedIndex;
-
-    for (var i = 0; i < newItems.length; i++) {
-      double offsetY = 0.0;
-
-      if (targetIndex != null) {
-        final distance = (i - targetIndex).abs();
-        if (distance == 0) {
-          offsetY = _maxOffsetY;
-        } else if (distance <= _itemsAffected) {
-          final factor = 1 - (distance / (_itemsAffected + 1));
-          offsetY = _neighborOffsetY * factor;
-        }
-      }
-
-      newItems[i] = newItems[i].copyWith(
-        offsetY: offsetY,
-        state: i == targetIndex ? DockItemState.hovered : DockItemState.normal,
-      );
-    }
-
-    _items = newItems;
-  }
-
   void updateDragPosition(int targetIndex) {
     if (_draggedIndex == null || targetIndex == _draggedIndex) return;
 
     final newItems = List<DockItem>.from(_items);
-    final draggedItem = newItems[_draggedIndex!];
-
-    newItems.removeAt(_draggedIndex!);
+    final draggedItem = newItems.removeAt(_draggedIndex!);
     newItems.insert(targetIndex, draggedItem);
 
     for (var i = 0; i < newItems.length; i++) {
-      newItems[i] = newItems[i].copyWith(
-        index: i,
-        state: DockItemState.normal,
-        offsetY: 0.0,
-      );
+      newItems[i] = newItems[i].copyWith(index: i);
     }
 
     _items = newItems;
@@ -119,5 +84,45 @@ class DockController extends ChangeNotifier {
 
     _items = newItems;
     notifyListeners();
+  }
+
+  void handleDesktopDrop(DockItem item) {
+    if (_draggedIndex != null) {
+      final newItems = List<DockItem>.from(_items);
+      newItems.removeAt(_draggedIndex!);
+
+      for (var i = 0; i < newItems.length; i++) {
+        newItems[i] = newItems[i].copyWith(index: i);
+      }
+
+      _items = newItems;
+      _draggedIndex = null;
+      notifyListeners();
+    }
+  }
+
+  void _updatePositions() {
+    final newItems = List<DockItem>.from(_items);
+    final targetIndex = _hoveredIndex ?? _draggedIndex;
+
+    for (var i = 0; i < newItems.length; i++) {
+      double offsetY = 0.0;
+
+      if (targetIndex != null && !_isDragging) {
+        final distance = (i - targetIndex).abs();
+        if (distance == 0) {
+          offsetY = _maxOffsetY;
+        } else if (distance <= 2) {
+          offsetY = _neighborOffsetY * (1 - (distance / 3));
+        }
+      }
+
+      newItems[i] = newItems[i].copyWith(
+        offsetY: offsetY,
+        state: i == targetIndex ? DockItemState.hovered : DockItemState.normal,
+      );
+    }
+
+    _items = newItems;
   }
 }

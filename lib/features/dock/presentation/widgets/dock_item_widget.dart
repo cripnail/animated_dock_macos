@@ -9,13 +9,13 @@ class DockItemWidget extends StatefulWidget {
   final VoidCallback onDragEnd;
 
   const DockItemWidget({
-    Key? key,
+    super.key,
     required this.item,
     required this.onHover,
     required this.onDragStart,
     required this.onDragTargetMove,
     required this.onDragEnd,
-  }) : super(key: key);
+  });
 
   @override
   State<DockItemWidget> createState() => _DockItemWidgetState();
@@ -26,8 +26,7 @@ Widget _buildDockItem(DockItem item) {
     duration: const Duration(milliseconds: 200),
     curve: Curves.easeOutQuart,
     alignment: Alignment.center,
-    transform: Matrix4.identity()
-      ..translate(0.0, item.offsetY),
+    transform: Matrix4.identity()..translate(0.0, item.offsetY),
     child: Stack(
       clipBehavior: Clip.none,
       alignment: Alignment.bottomCenter,
@@ -56,50 +55,45 @@ Widget _buildDockItem(DockItem item) {
     ),
   );
 }
+
 class _DockItemWidgetState extends State<DockItemWidget> {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => widget.onHover(widget.item.index),
       onExit: (_) => widget.onHover(null),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutQuart,
-        transform: Matrix4.identity()
-          ..scale(widget.item.scale)
-          ..translate(0.0, widget.item.offsetY),
-        child: Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Stack(
-            children: [
-              Image.asset(
+      child: Container(
+        height: 70,
+        alignment: Alignment.center,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutQuart,
+              transform: Matrix4.identity()
+                ..translate(0.0, widget.item.offsetY.clamp(-10.0, 10.0)),
+              child: Image.asset(
                 widget.item.iconPath,
-                width: 50,
-                height: 50,
+                width: 50 * widget.item.scale,
+                height: 50 * widget.item.scale,
                 fit: BoxFit.contain,
               ),
-              if (widget.item.isRunning)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Container(
-                      width: 4,
-                      height: 4,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
+            ),
+            if (widget.item.isRunning)
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  width: 4,
+                  height: 4,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black,
                   ),
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );

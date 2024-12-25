@@ -6,8 +6,8 @@ class DockRepository {
 
     return [
       DockItem(
-        iconPath: 'assets/icons/cmd.png',
-        label: 'Cmd',
+        iconPath: 'assets/icons/files.png',
+        label: 'Files',
         index: 0,
         isRunning: true,
       ),
@@ -42,6 +42,21 @@ class DockRepository {
         iconPath: 'assets/icons/xonotic.png',
         label: 'Xonotic',
         index: 6,
+      ),
+      DockItem(
+        iconPath: 'assets/icons/discord.png',
+        label: 'Discord',
+        index: 7,
+      ),
+      DockItem(
+        iconPath: 'assets/icons/disneyplus.png',
+        label: 'Disneyplus',
+        index: 8,
+      ),
+      DockItem(
+        iconPath: 'assets/icons/netflix.png',
+        label: 'Netflix',
+        index: 9,
       ),
     ];
   }

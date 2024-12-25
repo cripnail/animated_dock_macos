@@ -4,6 +4,10 @@ class Assets {
 
   static const String iconsCmd = 'assets/icons/cmd.png';
   static const String iconsControl = 'assets/icons/control.png';
+  static const String iconsDiscord = 'assets/icons/discord.png';
+  static const String iconsDisneyplus = 'assets/icons/disneyplus.png';
+  static const String iconsFiles = 'assets/icons/files.png';
+  static const String iconsNetflix = 'assets/icons/netflix.png';
   static const String iconsTwitch = 'assets/icons/twitch.png';
   static const String iconsTwitter = 'assets/icons/twitter.png';
   static const String iconsVlc = 'assets/icons/vlc.png';
