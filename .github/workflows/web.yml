@@ -23,7 +23,8 @@ jobs:
         run: flutter build web --base-href "/animated_dock_macos/"
 
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          folder: build/web
-          branch: main       
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          force_orphan: true
