@@ -22,19 +22,21 @@ class EnhancedShadow extends StatelessWidget {
         borderRadius: borderRadius,
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withOpacity(0.1 * glowIntensity),
+            color: Colors.white.withAlpha((0.1 * glowIntensity * 255).round()),
             spreadRadius: 0,
             blurRadius: 10,
             offset: const Offset(0, -1),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.2 * shadowIntensity),
+            color:
+                Colors.black.withAlpha((0.2 * shadowIntensity * 255).round()),
             spreadRadius: 2,
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.1 * shadowIntensity),
+            color:
+                Colors.black.withAlpha((0.1 * shadowIntensity * 255).round()),
             spreadRadius: 0,
             blurRadius: 25,
             offset: const Offset(0, 8),

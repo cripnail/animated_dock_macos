@@ -18,8 +18,8 @@ class DragParticle {
 
   bool update() {
     position += velocity;
-    velocity *= 0.95; // Замедление
-    life *= 0.95; // Затухание
+    velocity *= 0.95; // Deceleration
+    life *= 0.95; // Fade out
     return life > 0.1;
   }
 }
@@ -33,7 +33,7 @@ class DragParticlesPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     for (var particle in particles) {
       final paint = Paint()
-        ..color = particle.color.withOpacity(particle.life)
+        ..color = particle.color.withAlpha((particle.life * 255).round())
         ..style = PaintingStyle.fill;
 
       canvas.drawCircle(

@@ -26,13 +26,13 @@ class DockContainer extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.white.withOpacity(0.3),
-                    Colors.white.withOpacity(0.2),
+                    Colors.white.withAlpha((0.3 * 255).round()),
+                    Colors.white.withAlpha((0.2 * 255).round()),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withAlpha((0.3 * 255).round()),
                   width: 0.5,
                 ),
               ),
@@ -54,8 +54,8 @@ class DockContainer extends StatelessWidget {
   Widget _buildDraggableItem(int index) {
     final item = controller.items[index];
     return DragTarget<DockItem>(
-      onWillAccept: (data) => data != item,
-      onAccept: (data) => controller.updateDragPosition(index),
+      onWillAcceptWithDetails: (details) => details.data != item,
+      onAcceptWithDetails: (details) => controller.updateDragPosition(index),
       builder: (context, candidateData, rejectedData) {
         return Draggable<DockItem>(
           data: item,
@@ -82,9 +82,6 @@ class DockContainer extends StatelessWidget {
     );
   }
 
-
-
-
   Widget _buildDockItem(DockItem item) {
     return SizedBox(
       width: 50,
@@ -97,8 +94,8 @@ class DockContainer extends StatelessWidget {
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeOutCubic,
               transform: Matrix4.identity()
-                ..translate(0.0, item.offsetY.clamp(-8.0, 8.0)) // Уменьшили с 10 до 8
-                ..scale(1.0 + (item.offsetY.abs().clamp(0.0, 8.0) / 60)), // Уменьшили масштаб с 50 до 60
+                ..translate(0.0, item.offsetY.clamp(-8.0, 8.0))
+                ..scale(1.0 + (item.offsetY.abs().clamp(0.0, 8.0) / 60)),
               transformAlignment: Alignment.center,
               child: Image.asset(
                 item.iconPath,

@@ -1,8 +1,12 @@
+import 'package:flutter/foundation.dart';
+
 import '../../domain/entities/dock_item.dart';
 
 class DockRepository {
   List<DockItem> getInitialItems() {
-    print('Loading dock items...');
+    if (kDebugMode) {
+      print('Loading dock items...');
+    }
 
     return [
       DockItem(

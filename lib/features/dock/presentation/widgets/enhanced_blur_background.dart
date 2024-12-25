@@ -19,7 +19,7 @@ class EnhancedBlurBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Первый слой размытия для фона
+        // First blur layer for background
         ClipRRect(
           borderRadius: borderRadius ?? BorderRadius.zero,
           child: BackdropFilter(
@@ -29,14 +29,14 @@ class EnhancedBlurBackground extends StatelessWidget {
             ),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(opacity),
+                color: Colors.white.withAlpha((opacity * 255).round()),
                 borderRadius: borderRadius,
               ),
               child: child,
             ),
           ),
         ),
-        // Второй слой размытия для эффекта свечения
+        // Second blur layer for glow effect
         Positioned.fill(
           child: ClipRRect(
             borderRadius: borderRadius ?? BorderRadius.zero,
@@ -51,8 +51,8 @@ class EnhancedBlurBackground extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.white.withOpacity(0.1),
-                      Colors.white.withOpacity(0.05),
+                      Colors.white.withAlpha((0.1 * 255).round()),
+                      Colors.white.withAlpha((0.05 * 255).round()),
                     ],
                   ),
                 ),

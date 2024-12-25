@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 
 class DockReflection extends StatelessWidget {
   final Widget child;
@@ -34,8 +33,8 @@ class DockReflection extends StatelessWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.white.withOpacity(opacity),
-                        Colors.white.withOpacity(0),
+                        Colors.white.withAlpha((opacity * 255).round()),
+                        Colors.white.withAlpha(0),
                       ],
                     ),
                   ),
