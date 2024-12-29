@@ -41,8 +41,8 @@ class _DockItemWidgetState extends State<DockItemWidget> {
                 ..translate(0.0, widget.item.offsetY.clamp(-10.0, 10.0)),
               child: Image.asset(
                 widget.item.iconPath,
-                width: 50 * widget.item.scale,
-                height: 50 * widget.item.scale,
+                width: 50,  // Убрали умножение на scale
+                height: 50, // Убрали умножение на scale
                 fit: BoxFit.contain,
               ),
             ),

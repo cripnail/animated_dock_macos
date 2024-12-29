@@ -39,46 +39,72 @@ class DockContainer extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  for (var i = 0; i < controller.items.length; i++)
-                    _buildDraggableItem(i),
-                ],
+                children: controller.items.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
+
+                  return DragTarget<DockItem>(
+                    onWillAcceptWithDetails: (details) => true,
+                    onAcceptWithDetails: (details) {
+                      controller.updateDragPosition(index);
+                    },
+                    builder: (context, candidateData, rejectedData) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOutQuart,
+                        transform: Matrix4.identity()
+                          ..translate(item.offsetX, item.offsetY),
+                        child: Draggable<DockItem>(
+                          data: item,
+                          feedback: _buildFeedback(item),
+                          // Ключевое изменение здесь - уменьшаем просвет между иконками
+                          childWhenDragging: controller.isLeavingDock
+                              ? const SizedBox(width: 12) // Минимальный просвет при перетаскивании вверх
+                              : const SizedBox(width: 62), // Стандартный просвет
+                          onDragStarted: () {
+                            controller.startDragging(index);
+                          },
+                          onDragUpdate: (details) {
+                            final RenderBox box =
+                            context.findRenderObject() as RenderBox;
+                            final dockPosition = box.localToGlobal(Offset.zero);
+                            final dockTopY = dockPosition.dy;
+
+                            controller.handleDockLeave(
+                              index,
+                              details.globalPosition.dy,
+                              dockTopY,
+                            );
+
+                            controller.handleDockReturn(
+                              details.globalPosition.dy,
+                              dockTopY,
+                            );
+                          },
+                          onDragEnd: (details) {
+                            controller.resetState();
+                          },
+                          onDraggableCanceled: (velocity, offset) {
+                            controller.resetState();
+                          },
+                          child: MouseRegion(
+                            onEnter: (_) => controller.onHover(index),
+                            onExit: (_) => controller.onHover(null),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6),
+                              child: _buildDockItem(item),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
               ),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildDraggableItem(int index) {
-    final item = controller.items[index];
-    return DragTarget<DockItem>(
-      onWillAcceptWithDetails: (details) => details.data != item,
-      onAcceptWithDetails: (details) => controller.updateDragPosition(index),
-      builder: (context, candidateData, rejectedData) {
-        return Draggable<DockItem>(
-          data: item,
-          feedback: _buildFeedback(item),
-          childWhenDragging: _buildPlaceholder(),
-          onDragStarted: () => controller.startDragging(index),
-          onDragEnd: (details) {
-            if (!details.wasAccepted) {
-              controller.resetState();
-            } else {
-              controller.endDragging();
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: MouseRegion(
-              onEnter: (_) => controller.onHover(index),
-              onExit: (_) => controller.onHover(null),
-              child: _buildDockItem(item),
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -90,19 +116,11 @@ class DockContainer extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           Center(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
-              transform: Matrix4.identity()
-                ..translate(0.0, item.offsetY.clamp(-8.0, 8.0))
-                ..scale(1.0 + (item.offsetY.abs().clamp(0.0, 8.0) / 60)),
-              transformAlignment: Alignment.center,
-              child: Image.asset(
-                item.iconPath,
-                width: 50,
-                height: 50,
-                fit: BoxFit.contain,
-              ),
+            child: Image.asset(
+              item.iconPath,
+              width: 50,
+              height: 50,
+              fit: BoxFit.contain,
             ),
           ),
           if (item.isRunning)
@@ -132,16 +150,6 @@ class DockContainer extends StatelessWidget {
           item.iconPath,
           fit: BoxFit.contain,
         ),
-      ),
-    );
-  }
-
-  Widget _buildPlaceholder() {
-    return const Opacity(
-      opacity: 0.3,
-      child: SizedBox(
-        width: 50,
-        height: 50,
       ),
     );
   }

@@ -8,9 +8,9 @@ class DockItem {
   final int index;
   final bool isRunning;
   final DockItemState state;
-  final double scale;
   final double offsetY;
-  final Offset? dragPosition;
+  final double offsetX;
+  final bool isDragging;
 
   const DockItem({
     required this.iconPath,
@@ -18,9 +18,9 @@ class DockItem {
     required this.index,
     this.isRunning = false,
     this.state = DockItemState.normal,
-    this.scale = 1.0,
     this.offsetY = 0.0,
-    this.dragPosition,
+    this.offsetX = 0.0,
+    this.isDragging = false,
   });
 
   DockItem copyWith({
@@ -29,9 +29,9 @@ class DockItem {
     int? index,
     bool? isRunning,
     DockItemState? state,
-    double? scale,
     double? offsetY,
-    Offset? dragPosition,
+    double? offsetX,
+    bool? isDragging,
   }) {
     return DockItem(
       iconPath: iconPath ?? this.iconPath,
@@ -39,9 +39,9 @@ class DockItem {
       index: index ?? this.index,
       isRunning: isRunning ?? this.isRunning,
       state: state ?? this.state,
-      scale: scale ?? this.scale,
       offsetY: offsetY ?? this.offsetY,
-      dragPosition: dragPosition ?? this.dragPosition,
+      offsetX: offsetX ?? this.offsetX,
+      isDragging: isDragging ?? this.isDragging,
     );
   }
 }
