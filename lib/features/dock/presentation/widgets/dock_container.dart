@@ -50,17 +50,19 @@ class DockContainer extends StatelessWidget {
                     },
                     builder: (context, candidateData, rejectedData) {
                       return AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeOutQuart,
+                        duration: const Duration(milliseconds: 400), // Увеличенная длительность
+                        curve: Curves.easeOutCubic, // Более плавная кривая
                         transform: Matrix4.identity()
                           ..translate(item.offsetX, item.offsetY),
                         child: Draggable<DockItem>(
                           data: item,
                           feedback: _buildFeedback(item),
-                          // Ключевое изменение здесь - уменьшаем просвет между иконками
-                          childWhenDragging: controller.isLeavingDock
-                              ? const SizedBox(width: 12) // Минимальный просвет при перетаскивании вверх
-                              : const SizedBox(width: 62), // Стандартный просвет
+                          // Анимированное изменение просвета
+                          childWhenDragging: AnimatedContainer(
+                            duration: const Duration(milliseconds: 400),
+                            width: controller.isLeavingDock ? 12 : 62,
+                            curve: Curves.easeOutCubic,
+                          ),
                           onDragStarted: () {
                             controller.startDragging(index);
                           },

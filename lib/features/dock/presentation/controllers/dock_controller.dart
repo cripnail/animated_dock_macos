@@ -9,7 +9,6 @@ class DockController extends ChangeNotifier {
   int? _draggedIndex;
   bool _isDragging = false;
   bool _isLeavingDock = false;
-  double _dockScale = 1.0; // New field for dock scaling
 
   DockController({required this.repository}) {
     _items = repository.getInitialItems();
@@ -17,7 +16,6 @@ class DockController extends ChangeNotifier {
 
   List<DockItem> get items => List.unmodifiable(_items);
   bool get isLeavingDock => _isLeavingDock;
-  double get dockScale => _dockScale; // New getter for dock scale
 
   void onHover(int? index) {
     if (_hoveredIndex != index && !_isDragging) {
@@ -42,30 +40,29 @@ class DockController extends ChangeNotifier {
   }
 
   void handleDockLeave(int index, double dragPositionY, double dockTopY) {
-    if (_isDragging && dragPositionY < dockTopY - 50) {
+    // Увеличиваем значение для более раннего смыкания
+    final threshold = dockTopY - 15; // Начинаем смыкание когда иконка едва начала подниматься
+
+    if (_isDragging && dragPositionY < threshold) {
       if (!_isLeavingDock) {
         _isLeavingDock = true;
         final newItems = List<DockItem>.from(_items);
 
-        // Mark dragged icon
+        // Помечаем перетаскиваемую иконку
         newItems[index] = newItems[index].copyWith(
           isDragging: true,
           isRunning: true,
         );
 
-        // Calculate distance from dock for scaling
-        final distanceFromDock = (dockTopY - dragPositionY).clamp(0.0, 200.0);
-        _dockScale = 1.0 - (distanceFromDock / 800.0).clamp(0.0, 0.2); // Gradual scaling
-
-        // Adjust spacing between icons
+        // Смещаем соседние иконки
         for (var i = 0; i < newItems.length; i++) {
           if (i == index) continue;
 
           double offsetX = 0.0;
           if (i < index) {
-            offsetX = 8.0 * _dockScale; // Reduced spacing when leaving dock
+            offsetX = 6.0; // Уменьшенный просвет
           } else {
-            offsetX = -8.0 * _dockScale; // Reduced spacing when leaving dock
+            offsetX = -6.0; // Уменьшенный просвет
           }
 
           newItems[i] = newItems[i].copyWith(
@@ -76,19 +73,15 @@ class DockController extends ChangeNotifier {
 
         _items = newItems;
         notifyListeners();
-      } else {
-        // Update dock scale during drag
-        final distanceFromDock = (dockTopY - dragPositionY).clamp(0.0, 200.0);
-        _dockScale = 1.0 - (distanceFromDock / 800.0).clamp(0.0, 0.2);
-        notifyListeners();
       }
     }
   }
 
   void handleDockReturn(double dragPositionY, double dockTopY) {
-    if (_isLeavingDock && dragPositionY >= dockTopY - 50) {
+    final threshold = dockTopY - 15;
+
+    if (_isLeavingDock && dragPositionY >= threshold) {
       _isLeavingDock = false;
-      _dockScale = 1.0;
 
       final newItems = List<DockItem>.from(_items);
       for (var i = 0; i < newItems.length; i++) {
@@ -141,7 +134,6 @@ class DockController extends ChangeNotifier {
     _draggedIndex = null;
     _isDragging = false;
     _isLeavingDock = false;
-    _dockScale = 1.0;
 
     final newItems = List<DockItem>.from(_items);
     for (var i = 0; i < newItems.length; i++) {
