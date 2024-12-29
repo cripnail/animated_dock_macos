@@ -40,8 +40,8 @@ class DockController extends ChangeNotifier {
   }
 
   void handleDockLeave(int index, double dragPositionY, double dockTopY) {
-    // Увеличиваем значение для более раннего смыкания
-    final threshold = dockTopY - 15; // Начинаем смыкание когда иконка едва начала подниматься
+    // Начинаем смыкание раньше - когда иконка еще внутри дока
+    final threshold = dockTopY;
 
     if (_isDragging && dragPositionY < threshold) {
       if (!_isLeavingDock) {
@@ -65,8 +65,18 @@ class DockController extends ChangeNotifier {
             offsetX = -6.0; // Уменьшенный просвет
           }
 
+          // Вычисляем состояние подъема для иконки
+          final distance = (i - index).abs();
+          final offsetY = switch (distance) {
+            0 => 0.0, // Перетаскиваемая иконка
+            1 => -8.0, // Ближайшие соседи
+            2 => -5.0, // Следующие соседи
+            _ => 0.0
+          };
+
           newItems[i] = newItems[i].copyWith(
             offsetX: offsetX,
+            offsetY: offsetY, // Сохраняем эффект приподнятости
             state: DockItemState.normal,
           );
         }
@@ -78,7 +88,7 @@ class DockController extends ChangeNotifier {
   }
 
   void handleDockReturn(double dragPositionY, double dockTopY) {
-    final threshold = dockTopY - 15;
+    final threshold = dockTopY;
 
     if (_isLeavingDock && dragPositionY >= threshold) {
       _isLeavingDock = false;
